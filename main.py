@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 
-A = np.zeros([251,251])
+A = np.zeros([248,248])
 A[3,1] = 1
 A[3,2] = 1
 A[1,2] = 1
