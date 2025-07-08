@@ -2,38 +2,27 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-
-A = np.zeros([248,248])
-A[3,1] = 1
-A[3,2] = 1
-A[1,2] = 1
-A[2,4] = 1
-A[3,5] = 1
-A[3,6] = 1
-A[3,7] = 1
+from next_gen import calculate_next_gen
+from rle_to_array import rle_to_numpy_array as str_to_arr
 
 
 
-# Reinterpret with last column as the first
-def calculate_next_gen(A):
+rle_data = """
+x = 76, y = 50, rule = B3/S23
+15bo$14bobo$15bo3$9b2o$9b2o23b2o$b2o31bo$2bo29bobo$2bobo27b2o$3b2o4b2o
+11b2o$9b2o11b2o$17bo$16bob2o23b2o$16bo3bo4bo17bo$20bo4bo15bobo$3bob2o
+14bo3bo15b2o$b3ob2o14b2o$o18bo2b2o20b2o$b3ob2o12b2obo21b2o$3bobo24b2o$
+3bobo23bo2bo$4bo25b2o$41bo$42b2o$41b2o2$71bo$70bobo$70bobo$30b2o19b2o
+16b2ob3o$30b2o19b2o22bo$69b2ob3o$33b2o34b2obo$32bobo$32bo$31b2o2$65b2o
+$65b2o4b2o$42b2o27bobo$41bobo29bo$41bo31b2o$40b2o23b2o$65b2o3$60bo$59b
+obo$60bo!
+"""
 
-    i_shift = [-1, 0, 1]
-    j_shift = [-1, 0, 1]
+patern = str_to_arr(rle_data)
+x,y = patern.shape
 
-    sum_arr = np.zeros_like(A)
-
-    for i in i_shift:
-        A_i_rotated = np.roll(A, shift=i, axis=0)
-        for j in j_shift:
-            if i == 0 and j == 0:
-                continue
-            A_i_j_rotated = np.roll(A_i_rotated, shift=j, axis=1)
-            sum_arr += A_i_j_rotated
-
-    lives_on = ((A == 1) & ((sum_arr == 2) | (sum_arr==3))).astype(int)
-    becomes_alive = ((A == 0) & (sum_arr == 3)).astype(int)
-
-    return lives_on + becomes_alive
+A = np.zeros([80,80])
+A[0:x,0:y]=patern
 
 simulation = [A]
 
@@ -41,10 +30,10 @@ print(f"start: \n {A}")
 for n in range(20_000):
     A = calculate_next_gen(A)
     simulation.append(A)
-    print(f"next gen:\n{A}")
+    #print(f"next gen:\n{A}")
 
 fig, ax = plt.subplots()
-scatter = ax.scatter([], [], s = 0.7)
+scatter = ax.scatter([], [], s = 2)
 ax.set_aspect('equal')
 plt.gca().set_aspect('equal')
 ax.set_xlim(-0.5, simulation[0].shape[1] - 0.5)
